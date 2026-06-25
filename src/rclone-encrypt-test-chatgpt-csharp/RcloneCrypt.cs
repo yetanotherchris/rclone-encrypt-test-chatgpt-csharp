@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto.Generators;
-using Sodium;
+using TweetNaclSharp;
 
 namespace RcloneEncryptTestChatgptCsharp;
 
@@ -62,7 +62,7 @@ internal static class RcloneCrypt
                 break;
             }
 
-            var encrypted = SecretBox.Create(buffer.AsSpan(0, read).ToArray(), nonce, key.DataKey);
+            var encrypted = Nacl.Secretbox(buffer.AsSpan(0, read).ToArray(), nonce, key.DataKey);
             await output.WriteAsync(encrypted);
 
             IncrementNonce(nonce);
@@ -122,12 +122,8 @@ internal static class RcloneCrypt
             }
 
             var payloadLength = SecretBoxOverhead + dataRead;
-            byte[] plaintext;
-            try
-            {
-                plaintext = SecretBox.Open(block.AsSpan(0, payloadLength).ToArray(), nonce, key.DataKey);
-            }
-            catch
+            var plaintext = Nacl.SecretboxOpen(block.AsSpan(0, payloadLength).ToArray(), nonce, key.DataKey);
+            if (plaintext is null)
             {
                 throw new InvalidOperationException("wrong password or corrupt data");
             }
