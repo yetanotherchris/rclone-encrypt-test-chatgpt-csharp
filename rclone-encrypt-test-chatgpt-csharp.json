@@ -1,11 +1,11 @@
 {
   "homepage": "https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp",
   "description": "CLI for rclone-compatible file and filename encryption",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp/releases/download/v0.0.0/rclone-encrypt-test-chatgpt-csharp-windows-amd64.exe",
-      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "url": "https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp/releases/download/v1.0.0/rclone-encrypt-test-chatgpt-csharp-windows-amd64.exe",
+      "hash": "cd7a9d3776624259896f7c65f0fa31537126d53b1dea0f24816ba641edfd00b0",
       "bin": [
         [
           "rclone-encrypt-test-chatgpt-csharp-windows-amd64.exe",
