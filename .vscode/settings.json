@@ -1,0 +1,4 @@
+{
+  "dotnet.server.useOmnisharp": false,
+  "dotnet.defaultSolution": "rclone-encrypt-test-chatgpt-csharp.slnx"
+}

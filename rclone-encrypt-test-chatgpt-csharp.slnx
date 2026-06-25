@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/rclone-encrypt-test-chatgpt-csharp/rclone-encrypt-test-chatgpt-csharp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/rclone-encrypt-test-chatgpt-csharp.Tests/rclone-encrypt-test-chatgpt-csharp.Tests.csproj" />
+  </Folder>
+</Solution>

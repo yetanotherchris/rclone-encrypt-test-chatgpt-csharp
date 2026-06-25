@@ -1,0 +1,134 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            suffix: linux-amd64
+            ext: ""
+          - os: ubuntu-latest
+            rid: linux-arm64
+            suffix: linux-arm64
+            ext: ""
+          - os: macos-latest
+            rid: osx-x64
+            suffix: darwin-amd64
+            ext: ""
+          - os: macos-latest
+            rid: osx-arm64
+            suffix: darwin-arm64
+            ext: ""
+          - os: windows-latest
+            rid: win-x64
+            suffix: windows-amd64
+            ext: ".exe"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION="dev"
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        run: dotnet publish src/rclone-encrypt-test-chatgpt-csharp/rclone-encrypt-test-chatgpt-csharp.csproj -c Release -f net10.0 -r ${{ matrix.rid }} -p:PublishSingleFile=true -p:SelfContained=true -p:PublishTrimmed=true -p:DebugType=None -p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Package binary (unix)
+        if: matrix.ext == ''
+        shell: bash
+        run: |
+          cp src/rclone-encrypt-test-chatgpt-csharp/bin/Release/net10.0/${{ matrix.rid }}/publish/rclone-encrypt-test-chatgpt-csharp rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}
+          tar czf rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}.tar.gz rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}
+
+      - name: Package binary (windows)
+        if: matrix.ext == '.exe'
+        shell: pwsh
+        run: |
+          Copy-Item "src/rclone-encrypt-test-chatgpt-csharp/bin/Release/net10.0/${{ matrix.rid }}/publish/rclone-encrypt-test-chatgpt-csharp.exe" "rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}.exe"
+
+      - name: Upload artifact (unix)
+        if: matrix.ext == ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}
+          path: rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}.tar.gz
+
+      - name: Upload artifact (windows)
+        if: matrix.ext == '.exe'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}
+          path: rclone-encrypt-test-chatgpt-csharp-${{ matrix.suffix }}.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+
+      - name: Switch to main branch
+        run: |
+          git checkout main
+          git pull --rebase origin main
+
+      - name: Update Scoop manifest
+        shell: pwsh
+        run: ./updatescoop.ps1 -Version ${{ steps.version.outputs.VERSION }}
+
+      - name: Update Brew formula
+        shell: pwsh
+        run: ./updatebrew.ps1 -Version ${{ steps.version.outputs.VERSION }}
+
+      - name: Commit updated manifests
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update package manifests to ${{ github.ref_name }}"
+          file_pattern: "rclone-encrypt-test-chatgpt-csharp.json Formula/rclone-encrypt-test-chatgpt-csharp.rb"
