@@ -1,4 +1,4 @@
-# rclone-encrypt-test-chatgpt-csharp
+# cli-chatgpt-csharp
 
 A small CLI tool that encrypts and decrypts using the rclone encryption defaults.
 
@@ -14,15 +14,15 @@ Rclone uses a custom salt if no salt is provided, which this tool will use by de
 **Homebrew (macOS/Linux)**
 
 ```bash
-brew tap yetanotherchris/rclone-encrypt-test-chatgpt-csharp https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp
-brew install rclone-encrypt-test-chatgpt-csharp
+brew tap yetanotherchris/cli-chatgpt-csharp https://github.com/yetanotherchris/cli-chatgpt-csharp
+brew install cli-chatgpt-csharp
 ```
 
 **Scoop (Windows)**
 
 ```powershell
-scoop bucket add rclone-encrypt-test-chatgpt-csharp https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp
-scoop install rclone-encrypt-test-chatgpt-csharp
+scoop bucket add cli-chatgpt-csharp https://github.com/yetanotherchris/cli-chatgpt-csharp
+scoop install cli-chatgpt-csharp
 ```
 
 ## Examples usage
@@ -31,17 +31,17 @@ scoop install rclone-encrypt-test-chatgpt-csharp
 
 ```bash
 # Encrypt a file (prompts for password and optional salt)
-rclone-encrypt-test-chatgpt-csharp encrypt -i ./document.txt -o ./document.txt.encrypted
+cli-chatgpt-csharp encrypt -i ./document.txt -o ./document.txt.encrypted
 
 # Decrypt a file
-rclone-encrypt-test-chatgpt-csharp decrypt -i ./document.txt.encrypted -o ./document.txt
+cli-chatgpt-csharp decrypt -i ./document.txt.encrypted -o ./document.txt
 ```
 
 ### Encrypt/decrypt with custom salt
 
 ```bash
-rclone-encrypt-test-chatgpt-csharp encrypt --password "Testpassword1" --salt "deadbeefdeadbeefdeadbeefdeadbeef" -i ./input.txt -o ./output.bin
-rclone-encrypt-test-chatgpt-csharp decrypt --password "Testpassword1" --salt "deadbeefdeadbeefdeadbeefdeadbeef" -i ./output.bin -o ./input.txt
+cli-chatgpt-csharp encrypt --password "Testpassword1" --salt "deadbeefdeadbeefdeadbeefdeadbeef" -i ./input.txt -o ./output.bin
+cli-chatgpt-csharp decrypt --password "Testpassword1" --salt "deadbeefdeadbeefdeadbeefdeadbeef" -i ./output.bin -o ./input.txt
 ```
 
 ### Use environment variables (recommended for password)
@@ -49,8 +49,8 @@ rclone-encrypt-test-chatgpt-csharp decrypt --password "Testpassword1" --salt "de
 ```bash
 export RCLONE_ENCRYPT_PASSWORD="Testpassword1"
 export RCLONE_ENCRYPT_SALT="deadbeefdeadbeefdeadbeefdeadbeef"
-rclone-encrypt-test-chatgpt-csharp encrypt -i ./input.txt -o ./output.bin
-rclone-encrypt-test-chatgpt-csharp decrypt -i ./output.bin -o ./input.txt
+cli-chatgpt-csharp encrypt -i ./input.txt -o ./output.bin
+cli-chatgpt-csharp decrypt -i ./output.bin -o ./input.txt
 ```
 
 ### Automatic filename encryption/decryption (output optional)
@@ -58,15 +58,15 @@ rclone-encrypt-test-chatgpt-csharp decrypt -i ./output.bin -o ./input.txt
 When `-o`/`--output-file` is omitted, the CLI encrypts or decrypts the filename using AES-EME.
 
 ```bash
-rclone-encrypt-test-chatgpt-csharp encrypt --password "Testpassword1" -i ./TEST_FILE.txt
-rclone-encrypt-test-chatgpt-csharp decrypt --password "Testpassword1" -i ./kr9tu4e1da4u3nifdd99g9tf5o
+cli-chatgpt-csharp encrypt --password "Testpassword1" -i ./TEST_FILE.txt
+cli-chatgpt-csharp decrypt --password "Testpassword1" -i ./kr9tu4e1da4u3nifdd99g9tf5o
 ```
 
 ### Custom filename encoding (base32 or base64)
 
 ```bash
-rclone-encrypt-test-chatgpt-csharp encrypt --password "Testpassword1" --filename-encoding base64 -i ./TEST_FILE.txt
-rclone-encrypt-test-chatgpt-csharp decrypt --password "Testpassword1" --filename-encoding base64 -i ./Iyxcijgc9bp3o5Y0npW6xqUvwWNcc3MA4SadB0sR6cY
+cli-chatgpt-csharp encrypt --password "Testpassword1" --filename-encoding base64 -i ./TEST_FILE.txt
+cli-chatgpt-csharp decrypt --password "Testpassword1" --filename-encoding base64 -i ./Iyxcijgc9bp3o5Y0npW6xqUvwWNcc3MA4SadB0sR6cY
 ```
 
 ### About `--password`
@@ -98,12 +98,12 @@ Rclone encryption uses:
 Requires .NET 10 SDK.
 
 ```bash
-git clone https://github.com/yetanotherchris/rclone-encrypt-test-chatgpt-csharp
-cd rclone-encrypt-test-chatgpt-csharp
+git clone https://github.com/yetanotherchris/cli-chatgpt-csharp
+cd cli-chatgpt-csharp
 dotnet build
 dotnet test
 ```
 
 ## Releases
 
-Pushing a `vX.Y.Z` tag triggers the [Build and Release workflow](.github/workflows/build-release.yml), which publishes self-contained binaries for Linux/macOS/Windows, creates a GitHub Release, and updates the Scoop manifest (`rclone-encrypt-test-chatgpt-csharp.json`) and Homebrew formula (`Formula/rclone-encrypt-test-chatgpt-csharp.rb`).
+Pushing a `vX.Y.Z` tag triggers the [Build and Release workflow](.github/workflows/build-release.yml), which publishes self-contained binaries for Linux/macOS/Windows, creates a GitHub Release, and updates the Scoop manifest (`cli-chatgpt-csharp.json`) and Homebrew formula (`Formula/cli-chatgpt-csharp.rb`).
